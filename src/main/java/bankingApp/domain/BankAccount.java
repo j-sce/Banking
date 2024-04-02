@@ -1,4 +1,8 @@
+package bankingApp.domain;
+
 public class BankAccount {
+
+    private long id;
     private double balance;
 
     public BankAccount() {
@@ -9,14 +13,16 @@ public class BankAccount {
     }
 
     public void deposit(double depositAmount) {
-        balance = balance + depositAmount;
+        balance += depositAmount;
     }
 
-    public void withdraw(double withdrawAmount) {
+    public boolean withdraw(double withdrawAmount) {
         if (withdrawAmount <= balance) {
-            balance = balance - withdrawAmount;
+            balance -= withdrawAmount;
+            return true;
         } else {
             System.out.println("Withdraw failed, please check your balance!");
+            return false;
         }
     }
 
@@ -25,8 +31,7 @@ public class BankAccount {
     }
 
     public void transfer(BankAccount transferTo, double transferAmount) {
-        if (transferAmount <= balance) {
-            withdraw(transferAmount);
+        if (withdraw(transferAmount)) {
             transferTo.deposit(transferAmount);
             System.out.println("Transfer successful! Transferred: " + transferAmount + ".");
         } else {
@@ -34,24 +39,47 @@ public class BankAccount {
         }
     }
 
+    public long getId() {
+        return id;
+    }
+
+    public double getBalance() {
+        return balance;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public void setBalance(double balance) {
+        this.balance = balance;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof BankAccount that)) return false;
 
+        if (id != that.id) return false;
         return Double.compare(that.balance, balance) == 0;
     }
 
     @Override
     public int hashCode() {
-        long temp = Double.doubleToLongBits(balance);
-        return (int) (temp ^ (temp >>> 32));
+        int result;
+        long temp;
+        result = (int) (id ^ (id >>> 32));
+        temp = Double.doubleToLongBits(balance);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        return result;
     }
 
     @Override
     public String toString() {
         return "BankAccount{" +
-                "balance=" + balance +
+                "id=" + id +
+                ", balance=" + balance +
                 '}';
     }
+
 }
